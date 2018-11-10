@@ -1,5 +1,5 @@
 //var globalUrl = "https://trendswar.herokuapp.com/";
-var globalUrl = "https://trendswar.herokuapp.com/";
+var globalUrl = "http://localhost:8080/";
 
 var robotId = "5a08b73b734d1d68d42e2edf";
 

@@ -19,9 +19,9 @@ exports.postUser = function (req, res) {
     });
 };
 exports.getLeaderboard = function (req, res) {
-    Users.find({}).sort('-point').limit(10).exec(function(err, result) { 
-         if (err)
-        res.send(err);
-    res.json(result); 
-});
+    Users.find({ name: { $ne: "robot" } }).sort('-point').limit(10).exec(function (err, result) {
+        if (err)
+            res.send(err);
+        res.json(result);
+    });
 };

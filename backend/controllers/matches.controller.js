@@ -6,16 +6,14 @@ var mongoose = require('mongoose'),
 
 exports.findOpponent = function (req, res) {
     Matchs.findOne({ $where: "this.users.length < 2" }, function (err, result) {
-        // global._io.of('/' + req.body.matchId).on('connection', function (socket) {
-        //     console.log('someone connected');
-        // });
+
         if (err)
             res.send(err);
         if (!result) {
             result = new Matchs;
         }
-        //TODO: prevent push same user
-        result.users.push(req.body.userId);
+        
+        result.users = result.users.concat([req.body.userId]);
         if (!result.isNew) {
 
             TrendWords
@@ -24,14 +22,12 @@ exports.findOpponent = function (req, res) {
                     if (err)
                         res.send(err);
                     words.forEach(w => {
-                        result.words.push(w.word);
+                        result.words = result.words.concat([w.word]);
                     });
                     result.save(function (err, result2) {
                         if (err)
                             res.send(err);
                         res.json(result2);
-                        //global._io.of('/' + req.body.matchId).emit('matchResult', result2);
-                        global._io.sockets.in(req.body.matchId).emit('message', result2);
                     });
                 });
         }
@@ -40,7 +36,6 @@ exports.findOpponent = function (req, res) {
                 if (err)
                     res.send(err);
                 res.json(result2);
-                global._io.sockets.in(req.body.matchId).emit('message', result2);
             });
     });
 }
@@ -62,12 +57,11 @@ exports.answer = function (req, res) {
             Users.findById(req.body.userId, function (err, user) {
                 user.point += totalPoint;
                 user.save(function (e, r) {
-                    result.answers.push({ answer: req.body.answer, user: req.body.userId, point: totalPoint });
+                    result.answers = result.answers.concat([{ answer: req.body.answer, user: req.body.userId, point: totalPoint }]);
                     result.save(function (err, result2) {
                         if (err)
                             res.send(err);
                         res.json(result2);
-                        global._io.of('/' + req.body.matchId).emit('matchResult', result2);
                     });
                 });
             });
